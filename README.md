@@ -1,72 +1,67 @@
-# 📊 Generative BI Assistant (Powered by Groq)
+# 📊 Generative BI Assistant  
 
-Upload a dataset and **chat with your data like ChatGPT** — get answers, tables, and charts.  
-Built using **Python, Streamlit, Groq LLM, Pandas, and Matplotlib**.
+A **Streamlit + Groq-powered Generative BI Assistant** that lets you **chat with your data**.  
+Upload your CSV/Excel file (or try the sample dataset) and instantly get **AI-generated insights, tables, and visualizations**.  
 
----
-
-## ⚡ Features
-- 📂 Upload CSV files and preview your data
-- 💬 Ask natural language questions about your dataset
-- 🤖 Auto-generates **Python + Pandas** code using Groq LLM
-- ✅ Returns instant results (tables, KPIs)
-- 📊 Smart visualizations: Bar, Line, Pie, Histogram
-- 🖥️ Clean, interactive Streamlit UI
+🔗 **Live Demo:** [genai-bi-assistant.streamlit.app](https://genai-bi-assistant.streamlit.app/)  
 
 ---
 
-## 🛠️ Tech Stack
-- Python 3.9+
-- [Streamlit](https://streamlit.io/)
-- [Groq LLM](https://groq.com/) for AI code generation
-- Pandas & Matplotlib
-- dotenv (for API key management)
+## ✨ Features  
+
+✅ **Landing Page UI** – Clean intro screen with Get Started button  
+✅ **Light/Dark Themes** – Toggle between professional themes  
+✅ **Sample Dataset** – Superstore.csv preloaded for quick demo  
+✅ **Chat with Data** – Ask plain English questions, get results instantly  
+✅ **Smart Visualizations** – AI auto-generates charts when suitable  
+✅ **Scrollable Previews** – Data preview & dataset info in scrollable boxes  
+✅ **Download Results** – Export tables as CSV for further use  
+✅ **Query History** – Last 5 Q&As shown in sidebar  
 
 ---
 
-## 🚀 Setup & Usage
+## 🚀 Tech Stack  
 
-Clone the repo:
-```bash
-git clone https://github.com/aswin1019/GENAI-BI-ASSISTANT.git
-cd GENAI-BI-ASSISTANT
-```
+- **Frontend/UI:** [Streamlit](https://streamlit.io/)  
+- **AI Engine:** [Groq](https://groq.com/) (LLaMA models)  
+- **Data Analysis:** Pandas, NumPy, Matplotlib, Seaborn  
+- **Deployment:** Streamlit Cloud  
 
-Install dependencies:
-```bash
-pip install -r requirements.txt
-```
 
-Add your Groq API key in a `.env` file:
-```ini
-GROQ_API_KEY=your_api_key_here
-```
 
-Run the Streamlit app:
-```bash
-streamlit run app.py
-```
+## 📂 Project Structure  
+GENAI-BI-ASSISTANT/
+│── app.py # Main Streamlit app
+│── superstore.csv # Sample dataset
+│── requirements.txt # Dependencies
+│── README.md # Project documentation
+
 
 ---
 
-## 📷 Demo Screenshot
-(Add a screenshot of your running app here)
+## ⚡ Getting Started  
 
----
+1. **Clone the Repo**
+   ```bash
+   git clone https://github.com/aswin1019/GENAI-BI-ASSISTANT.git
+   cd GENAI-BI-ASSISTANT
+2. Install Dependencies
+    pip install -r requirements.txt
+3. Set API Key
+    Create a .env file and add:
+        GROQ_API_KEY=your_api_key_here
+4. Run App
+    streamlit run app.py
+##
+👨‍💻 Author
 
-## 🔮 Example Questions to Try
-- **Bar Chart** → "Top 10 products by sales"  
-- **Line Chart** → "Monthly sales trend"  
-- **Pie Chart** → "Sales share by region"  
-- **Histogram** → "Distribution of discounts"  
+Aswin M
 
----
+LinkedIn:https://www.linkedin.com/in/aswin-m-53aa001a8/
 
-## 👤 Author
-**Aswin M**  
-💼 Data Analyst | ML Engineer | Generative AI Enthusiast  
-🔗 [LinkedIn](https://linkedin.com/in/aswinmangathil) | [Portfolio](https://aswin-portfolio-six.vercel.app/)
+GitHub:https://github.com/aswin1019
 
----
+⚡ Built with Groq + Streamlit | 📊 Powered by Data
 
-⭐ If you like this project, don’t forget to **star this repo**!
+
+

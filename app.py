@@ -3,153 +3,47 @@ import time
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 import streamlit as st
+
 from dotenv import load_dotenv
-from groq import Groq
+from utils.groq_client import client
+from utils.theme import load_light_theme, load_dark_theme
+from utils.helpers import clean_dataframe
+from components.chat import chat_bubble
+from components.sidebar import render_sidebar
+from components.landing import render_landing
+from components.data_preview import render_data_preview
 
-# Load API key
-load_dotenv()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+# Streamlit config
+st.set_page_config(page_title="Generative BI Assistant", page_icon="📊", layout="wide")
 
-# Streamlit page config
-st.set_page_config(
-    page_title="Generative BI Assistant",
-    page_icon="📊",
-    layout="wide"
-)
-
-# ---- Initialize session state ----
+# ---- Init session state ----
 if "history" not in st.session_state:
     st.session_state["history"] = []
 if "started" not in st.session_state:
     st.session_state["started"] = False
 
 # Sidebar
-st.sidebar.title("⚡ BI Assistant")
-st.sidebar.write("Ask me questions about your data in **plain English**.")
-st.sidebar.markdown("---")
-theme_choice = st.sidebar.selectbox("🎨 Theme", ["Light", "Dark"])
-st.sidebar.info("Built with **Groq + Streamlit** by Aswin M")
+theme_choice = render_sidebar(st.session_state["history"])
 
-# Query History in Sidebar
-st.sidebar.markdown("### 🕑 Query History")
-if st.session_state["history"]:
-    for i, item in enumerate(reversed(st.session_state["history"]), 1):
-        st.sidebar.write(f"**Q{i}:** {item['q']}")
-        st.sidebar.write(item['a'])
-
-# ---- Theme Styling + Matplotlib Style ----
+# Load theme
 if theme_choice == "Light":
+    st.markdown(load_light_theme(), unsafe_allow_html=True)
     plt.style.use("default")
-    st.markdown("""
-        <style>
-        body { background: linear-gradient(to right, #f7f9fc, #eef3f7); }
-        .main { background: transparent; }
-        .stApp { background-color: #f5f7fa; }
-        .card {
-            background: white; padding: 20px; border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin: 20px 0;
-        }
-        .scroll-box {
-            max-height: 200px; overflow-y: auto; padding: 10px;
-            border: 1px solid #ddd; border-radius: 8px;
-            background-color: #fafafa;
-        }
-        .chat-bubble { padding: 12px 16px; border-radius: 16px;
-            margin: 10px 0; max-width: 75%; font-size: 15px; line-height: 1.4; }
-        .user-bubble { background: #00796b; color: white;
-            margin-left: auto; text-align: right; }
-        .ai-bubble { background: #f1f3f4; color: #222;
-            margin-right: auto; text-align: left; }
-        .stButton button {
-            background: linear-gradient(to right, #0072ff, #00c6ff); color: white;
-            border: none; padding: 10px 20px; border-radius: 8px;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-            transition: 0.3s ease;
-        }
-        .stButton button:hover {
-            background: linear-gradient(to right, #0059b3, #00a6c7);
-        }
-        footer { text-align: center; color: #555; font-size: 14px; margin-top: 40px; }
-        footer a { color: #0072ff; text-decoration: none; margin: 0 5px; }
-        footer a:hover { text-decoration: underline; }
-        </style>
-    """, unsafe_allow_html=True)
-else:  # Dark Theme
+else:
+    st.markdown(load_dark_theme(), unsafe_allow_html=True)
     plt.style.use("dark_background")
-    st.markdown("""
-        <style>
-        body { background: #121212; color: #e0e0e0; }
-        .main { background: transparent; }
-        .stApp { background-color: #181818; }
-        .card {
-            background: #1f1f1f; padding: 20px; border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin: 20px 0; color: #eee;
-        }
-        .scroll-box {
-            max-height: 200px; overflow-y: auto; padding: 10px;
-            border: 1px solid #444; border-radius: 8px;
-            background-color: #2a2a2a; color: #f5f5f5;
-        }
-        h1, h2, h3, h4, h5, h6, label, p, span {
-            color: #f5f5f5 !important;
-        }
-        .stRadio div[role="radiogroup"] label {
-            color: #f5f5f5 !important;
-            font-weight: 600 !important;
-            font-size: 15px !important;
-        }
-        .chat-bubble { padding: 12px 16px; border-radius: 16px;
-            margin: 10px 0; max-width: 75%; font-size: 15px; line-height: 1.4; }
-        .user-bubble { background: #00bfa5; color: white;
-            margin-left: auto; text-align: right; }
-        .ai-bubble { background: #333333; color: #f1f1f1;
-            margin-right: auto; text-align: left; }
-        .stButton button {
-            background: linear-gradient(to right, #00c6ff, #0072ff); color: white;
-            border: none; padding: 10px 20px; border-radius: 8px;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-            transition: 0.3s ease;
-        }
-        .stButton button:hover {
-            background: linear-gradient(to right, #00a6c7, #0059b3);
-        }
-        footer { text-align: center; color: #aaa; font-size: 14px; margin-top: 40px; }
-        footer a { color: #00c6ff; text-decoration: none; margin: 0 5px; }
-        footer a:hover { text-decoration: underline; }
-        </style>
-    """, unsafe_allow_html=True)
 
-# ---- Helper: Chat bubbles ----
-def chat_bubble(role, content):
-    css_class = "user-bubble" if role == "user" else "ai-bubble"
-    st.markdown(f"<div class='chat-bubble {css_class}'>{content}</div>", unsafe_allow_html=True)
-
-# ---- Landing Page ----
+# Landing Page
 if not st.session_state["started"]:
-    st.markdown("""
-    <div style="text-align: center; padding: 60px 0; 
-        background: linear-gradient(120deg, #0072ff, #00c6ff); 
-        border-radius: 12px; margin-bottom: 25px;">
-        <h1 style="color: white; font-size: 42px;">📊 Generative BI Assistant</h1>
-        <p style="color: #f0f0f0; font-size: 18px; max-width: 600px; margin: 0 auto;">
-            Chat with your data. Upload CSV/Excel and get instant insights & charts.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("🚀 Get Started"):
+    if render_landing():
         st.session_state["started"] = True
         st.rerun()
 else:
-    # ---- File Upload OR Sample ----
+    # File Upload / Sample
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("### 📂 Choose Your Data")
-    data_option = st.radio(
-        "Select how you want to start:",
-        ("📊 Use Sample Superstore Data", "⬆️ Upload My Own CSV")
-    )
+    data_option = st.radio("Select how you want to start:", ("📊 Use Sample Superstore Data", "⬆️ Upload My Own CSV"))
 
     df = None
     if data_option == "📊 Use Sample Superstore Data":
@@ -162,37 +56,12 @@ else:
             st.success(f"✅ Your dataset **{file.name}** has been uploaded successfully!")
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---- Main Logic ----
+    # Main Logic
     if df is not None:
-        # Cleaning
-        for col in df.columns:
-            if pd.api.types.is_numeric_dtype(df[col]):
-                df[col] = df[col].fillna(df[col].mean())
-            else:
-                df[col] = df[col].fillna("Unknown")
+        df = clean_dataframe(df)
 
-        for col in df.columns:
-            if "date" in col.lower():
-                try:
-                    df[col] = pd.to_datetime(df[col], errors="coerce")
-                except:
-                    pass
-
-        # Preview
-        with st.container():
-            col1, col2 = st.columns([2, 1])
-            with col1:
-                st.markdown("<div class='card'>", unsafe_allow_html=True)
-                st.subheader("📂 Preview of Data")
-                st.dataframe(df.head(), height=200)
-                st.markdown("</div>", unsafe_allow_html=True)
-            with col2:
-                st.markdown("<div class='card'>", unsafe_allow_html=True)
-                st.subheader("📌 Dataset Info")
-                st.markdown(f"**Rows:** {df.shape[0]} | **Columns:** {df.shape[1]}")
-                st.markdown("**Columns:**")
-                st.markdown(f"<div class='scroll-box'>{'<br>'.join(df.columns)}</div>", unsafe_allow_html=True)
-                st.markdown("</div>", unsafe_allow_html=True)
+        # Preview + Dataset Info
+        render_data_preview(df)
 
         # Chat Section
         st.markdown("<div class='card'>", unsafe_allow_html=True)
@@ -247,7 +116,6 @@ else:
 
                         if isinstance(result, pd.DataFrame):
                             st.dataframe(result, height=250)
-
                             if result.shape[1] >= 2:
                                 st.subheader("📊 Visualization")
                                 fig, ax = plt.subplots()
@@ -264,7 +132,7 @@ else:
                     chat_bubble("assistant", f"❌ Error: {e}")
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ---- Footer ----
+# Footer
 st.markdown("""
 <footer>
     <p>Built by <b>Aswin M</b> | Powered by <b>Groq + Streamlit</b></p>

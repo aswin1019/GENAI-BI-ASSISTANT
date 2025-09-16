@@ -51,6 +51,11 @@ if theme_choice == "Light":
             background: white; padding: 20px; border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin: 20px 0;
         }
+        .scroll-box {
+            max-height: 200px; overflow-y: auto; padding: 10px;
+            border: 1px solid #ddd; border-radius: 8px;
+            background-color: #fafafa;
+        }
         .chat-bubble { padding: 12px 16px; border-radius: 16px;
             margin: 10px 0; max-width: 75%; font-size: 15px; line-height: 1.4; }
         .user-bubble { background: #00796b; color: white;
@@ -82,6 +87,11 @@ else:  # Dark Theme
             background: #1f1f1f; padding: 20px; border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin: 20px 0; color: #eee;
         }
+        .scroll-box {
+            max-height: 200px; overflow-y: auto; padding: 10px;
+            border: 1px solid #444; border-radius: 8px;
+            background-color: #2a2a2a; color: #f5f5f5;
+        }
         h1, h2, h3, h4, h5, h6, label, p, span {
             color: #f5f5f5 !important;
         }
@@ -89,17 +99,6 @@ else:  # Dark Theme
             color: #f5f5f5 !important;
             font-weight: 600 !important;
             font-size: 15px !important;
-        }
-        div.stAlert {
-            background-color: #2a2a2a !important;
-            color: #ffffff !important;
-            border: 1px solid #00c6ff !important;
-            border-radius: 8px;
-            padding: 12px !important;
-        }
-        div.stAlert p {
-            color: #ffffff !important;
-            font-weight: 500 !important;
         }
         .chat-bubble { padding: 12px 16px; border-radius: 16px;
             margin: 10px 0; max-width: 75%; font-size: 15px; line-height: 1.4; }
@@ -185,13 +184,14 @@ else:
             with col1:
                 st.markdown("<div class='card'>", unsafe_allow_html=True)
                 st.subheader("📂 Preview of Data")
-                st.dataframe(df.head())
+                st.dataframe(df.head(), height=200)
                 st.markdown("</div>", unsafe_allow_html=True)
             with col2:
                 st.markdown("<div class='card'>", unsafe_allow_html=True)
                 st.subheader("📌 Dataset Info")
-                st.write(f"Rows: {df.shape[0]} | Columns: {df.shape[1]}")
-                st.write("**Columns:**", list(df.columns))
+                st.markdown(f"**Rows:** {df.shape[0]} | **Columns:** {df.shape[1]}")
+                st.markdown("**Columns:**")
+                st.markdown(f"<div class='scroll-box'>{'<br>'.join(df.columns)}</div>", unsafe_allow_html=True)
                 st.markdown("</div>", unsafe_allow_html=True)
 
         # Chat Section
@@ -246,7 +246,7 @@ else:
                         chat_bubble("assistant", "Here are your results:")
 
                         if isinstance(result, pd.DataFrame):
-                            st.dataframe(result)
+                            st.dataframe(result, height=250)
 
                             if result.shape[1] >= 2:
                                 st.subheader("📊 Visualization")

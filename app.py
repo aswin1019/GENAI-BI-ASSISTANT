@@ -256,8 +256,8 @@ st.markdown("""
 <footer>
     <p>Built by <b>Aswin M</b> | Powered by <b>Groq + Streamlit</b></p>
     <p>
-        <a href="https://github.com/aswinm" target="_blank">GitHub</a> |
-        <a href="https://linkedin.com/in/aswinm" target="_blank">LinkedIn</a>
+        <a href="https://github.com/aswin1019" target="_blank">GitHub</a> |
+        <a href="https://www.linkedin.com/in/aswin-m-53aa001a8" target="_blank">LinkedIn</a>
     </p>
 </footer>
 """, unsafe_allow_html=True)

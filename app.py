@@ -25,85 +25,11 @@ if "history" not in st.session_state:
 if "started" not in st.session_state:
     st.session_state["started"] = False
 
-# ---- Global Styling ----
-st.markdown("""
-    <style>
-    body {
-        background: linear-gradient(to right, #f7f9fc, #eef3f7);
-    }
-    .main {
-        background: transparent;
-    }
-    .stApp {
-        background-color: #f5f7fa;
-    }
-    .card {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        margin: 20px 0;
-    }
-    .chat-bubble {
-        padding: 12px 16px;
-        border-radius: 16px;
-        margin: 10px 0;
-        max-width: 75%;
-        font-size: 15px;
-        line-height: 1.4;
-    }
-    .user-bubble {
-        background: #00796b;
-        color: white;
-        margin-left: auto;
-        text-align: right;
-    }
-    .ai-bubble {
-        background: #f1f3f4;
-        color: #222;
-        margin-right: auto;
-        text-align: left;
-    }
-    .stButton button {
-        background: linear-gradient(to right, #0072ff, #00c6ff);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s ease;
-    }
-    .stButton button:hover {
-        background: linear-gradient(to right, #0059b3, #00a6c7);
-    }
-    footer {
-        text-align: center;
-        color: #555;
-        font-size: 14px;
-        margin-top: 40px;
-    }
-    footer a {
-        color: #0072ff;
-        text-decoration: none;
-        margin: 0 5px;
-    }
-    footer a:hover {
-        text-decoration: underline;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# ---- Helper: Chat bubbles ----
-def chat_bubble(role, content):
-    css_class = "user-bubble" if role == "user" else "ai-bubble"
-    st.markdown(f"<div class='chat-bubble {css_class}'>{content}</div>", unsafe_allow_html=True)
-
 # Sidebar
 st.sidebar.title("⚡ BI Assistant")
 st.sidebar.write("Ask me questions about your data in **plain English**.")
 st.sidebar.markdown("---")
+theme_choice = st.sidebar.selectbox("🎨 Theme", ["Light", "Dark"])
 st.sidebar.info("Built with **Groq + Streamlit** by Aswin M")
 
 # Query History in Sidebar
@@ -113,10 +39,90 @@ if st.session_state["history"]:
         st.sidebar.write(f"**Q{i}:** {item['q']}")
         st.sidebar.write(item['a'])
 
+# ---- Theme Styling + Matplotlib Style ----
+if theme_choice == "Light":
+    plt.style.use("default")
+    st.markdown("""
+        <style>
+        body { background: linear-gradient(to right, #f7f9fc, #eef3f7); }
+        .main { background: transparent; }
+        .stApp { background-color: #f5f7fa; }
+        .card {
+            background: white; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin: 20px 0;
+        }
+        .chat-bubble { padding: 12px 16px; border-radius: 16px;
+            margin: 10px 0; max-width: 75%; font-size: 15px; line-height: 1.4; }
+        .user-bubble { background: #00796b; color: white;
+            margin-left: auto; text-align: right; }
+        .ai-bubble { background: #f1f3f4; color: #222;
+            margin-right: auto; text-align: left; }
+        .stButton button {
+            background: linear-gradient(to right, #0072ff, #00c6ff); color: white;
+            border: none; padding: 10px 20px; border-radius: 8px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            transition: 0.3s ease;
+        }
+        .stButton button:hover {
+            background: linear-gradient(to right, #0059b3, #00a6c7);
+        }
+        footer { text-align: center; color: #555; font-size: 14px; margin-top: 40px; }
+        footer a { color: #0072ff; text-decoration: none; margin: 0 5px; }
+        footer a:hover { text-decoration: underline; }
+        </style>
+    """, unsafe_allow_html=True)
+else:  # Dark Theme
+    plt.style.use("dark_background")
+    st.markdown("""
+        <style>
+        body { background: #121212; color: #e0e0e0; }
+        .main { background: transparent; }
+        .stApp { background-color: #181818; }
+        .card {
+            background: #1f1f1f; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin: 20px 0; color: #eee;
+        }
+        .chat-bubble { padding: 12px 16px; border-radius: 16px;
+            margin: 10px 0; max-width: 75%; font-size: 15px; line-height: 1.4; }
+        .user-bubble { background: #00bfa5; color: white;
+            margin-left: auto; text-align: right; }
+        .ai-bubble { background: #333333; color: #f1f1f1;
+            margin-right: auto; text-align: left; }
+        .stButton button {
+            background: linear-gradient(to right, #00c6ff, #0072ff); color: white;
+            border: none; padding: 10px 20px; border-radius: 8px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            transition: 0.3s ease;
+        }
+        .stButton button:hover {
+            background: linear-gradient(to right, #00a6c7, #0059b3);
+        }
+        footer { text-align: center; color: #aaa; font-size: 14px; margin-top: 40px; }
+        footer a { color: #00c6ff; text-decoration: none; margin: 0 5px; }
+        footer a:hover { text-decoration: underline; }
+
+        /* 🔥 FIX: Make text & labels visible in dark mode */
+        h1, h2, h3, h4, h5, h6, p, label, span, div {
+            color: #e0e0e0 !important;
+        }
+        h2, h3 {
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+# ---- Helper: Chat bubbles ----
+def chat_bubble(role, content):
+    css_class = "user-bubble" if role == "user" else "ai-bubble"
+    st.markdown(f"<div class='chat-bubble {css_class}'>{content}</div>", unsafe_allow_html=True)
+
 # ---- Landing Page ----
 if not st.session_state["started"]:
     st.markdown("""
-    <div style="text-align: center; padding: 60px 0; background: linear-gradient(120deg, #0072ff, #00c6ff); border-radius: 12px; margin-bottom: 25px;">
+    <div style="text-align: center; padding: 60px 0; 
+        background: linear-gradient(120deg, #0072ff, #00c6ff); 
+        border-radius: 12px; margin-bottom: 25px;">
         <h1 style="color: white; font-size: 42px;">📊 Generative BI Assistant</h1>
         <p style="color: #f0f0f0; font-size: 18px; max-width: 600px; margin: 0 auto;">
             Chat with your data. Upload CSV/Excel and get instant insights & charts.
@@ -149,7 +155,7 @@ else:
 
     # ---- Main Logic ----
     if df is not None:
-        # Clean Data
+        # Cleaning
         for col in df.columns:
             if pd.api.types.is_numeric_dtype(df[col]):
                 df[col] = df[col].fillna(df[col].mean())
@@ -163,7 +169,7 @@ else:
                 except:
                     pass
 
-        # Data Preview
+        # Preview
         with st.container():
             col1, col2 = st.columns([2, 1])
             with col1:
@@ -208,7 +214,6 @@ else:
                     )
 
                 code_answer = chat_completion.choices[0].message.content.strip()
-
                 if "```" in code_answer:
                     code_answer = "".join([p for p in code_answer.split("```") if not p.strip().startswith("python")])
 
@@ -233,14 +238,12 @@ else:
                         if isinstance(result, pd.DataFrame):
                             st.dataframe(result)
 
-                            # Chart
                             if result.shape[1] >= 2:
                                 st.subheader("📊 Visualization")
                                 fig, ax = plt.subplots()
                                 result.plot(ax=ax)
                                 st.pyplot(fig)
 
-                            # Download option
                             csv = result.to_csv(index=False).encode("utf-8")
                             st.download_button("⬇️ Download CSV", csv, "result.csv", "text/csv")
                         else:

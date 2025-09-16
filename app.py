@@ -82,6 +82,25 @@ else:  # Dark Theme
             background: #1f1f1f; padding: 20px; border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin: 20px 0; color: #eee;
         }
+        h1, h2, h3, h4, h5, h6, label, p, span {
+            color: #f5f5f5 !important;
+        }
+        .stRadio div[role="radiogroup"] label {
+            color: #f5f5f5 !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+        }
+        div.stAlert {
+            background-color: #2a2a2a !important;
+            color: #ffffff !important;
+            border: 1px solid #00c6ff !important;
+            border-radius: 8px;
+            padding: 12px !important;
+        }
+        div.stAlert p {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+        }
         .chat-bubble { padding: 12px 16px; border-radius: 16px;
             margin: 10px 0; max-width: 75%; font-size: 15px; line-height: 1.4; }
         .user-bubble { background: #00bfa5; color: white;
@@ -100,15 +119,6 @@ else:  # Dark Theme
         footer { text-align: center; color: #aaa; font-size: 14px; margin-top: 40px; }
         footer a { color: #00c6ff; text-decoration: none; margin: 0 5px; }
         footer a:hover { text-decoration: underline; }
-
-        /* 🔥 FIX: Make text & labels visible in dark mode */
-        h1, h2, h3, h4, h5, h6, p, label, span, div {
-            color: #e0e0e0 !important;
-        }
-        h2, h3 {
-            color: #ffffff !important;
-            font-weight: 600 !important;
-        }
         </style>
     """, unsafe_allow_html=True)
 
